@@ -1,0 +1,32 @@
+version: "3"
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: "diplom"
+      POSTGRES_PASSWORD: "localdbpass"
+      POSTGRES_USER: "postgres"
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+  # postgres_admin:
+  #   image: dpage/pgadmin4
+  #   environment:
+  #     - PGADMIN_DEFAULT_EMAIL=ibt_admin
+  #     - PGADMIN_DEFAULT_PASSWORD=AyqjRa6QuCg3RiS
+  #   ports:
+  #     - '5050:5050'
+  #   depends_on:
+  #     - db
+  server:
+    build: server/
+    restart: unless-stopped
+    command: npm run start:dev
+    ports:
+      - "3001:80"
+    depends_on:
+      - db
+    volumes:
+      - /server/src/storage:/usr/src/app/storage
