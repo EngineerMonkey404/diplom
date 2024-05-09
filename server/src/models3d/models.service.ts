@@ -5,6 +5,7 @@ import { IModels3D } from './types/model3d.interface';
 import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs/promises';
 import { join } from 'path';
+import { existsSync } from 'fs';
 
 @Injectable()
 export class Models3DService {
@@ -17,23 +18,27 @@ export class Models3DService {
     return (await this.models3D.create({ fileName, html })).id;
   }
 
-  // Todo Сделать проверку на существование файлов
-
   async updateModel(model3d: IModels3D, newFile: Express.Multer.File) {
     const prevFile = (
       await this.models3D.findOne({ where: { id: model3d.id } })
     ).fileName;
-    await fs.unlink(
-      join(process.cwd(), this.configService.get('MODELS3D_PATH'), prevFile),
+    const p = join(
+      process.cwd(),
+      this.configService.get('MODELS3D_PATH'),
+      prevFile,
     );
+    if (existsSync(p)) await fs.unlink(p);
     this.models3D.update(model3d, { where: { id: model3d.id } });
   }
 
   async deleteModel(id: number) {
     const prevFile = (await this.models3D.findOne({ where: { id } })).fileName;
-    await fs.unlink(
-      join(process.cwd(), this.configService.get('MODELS3D_PATH'), prevFile),
+    const p = join(
+      process.cwd(),
+      this.configService.get('MODELS3D_PATH'),
+      prevFile,
     );
+    if (existsSync(p)) await fs.unlink(p);
     this.models3D.destroy({ where: { id } });
   }
 
