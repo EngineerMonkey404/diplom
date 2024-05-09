@@ -2,6 +2,7 @@ import {
   AllowNull,
   AutoIncrement,
   Column,
+  DataType,
   Model,
   PrimaryKey,
   Table,
@@ -19,4 +20,8 @@ export class Models3D extends Model {
 
   @Column
   html: string;
+
+  // @AllowNull(true)
+  // @Column(DataType.ARRAY(DataType.INTEGER))
+  // views: number[];
 }

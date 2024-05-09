@@ -45,4 +45,8 @@ export class Models3DService {
   getModel(id: number) {
     return this.models3D.findOne({ where: { id } });
   }
+
+  async getFileById(id: number) {
+    return (await this.models3D.findOne({ where: { id } })).fileName;
+  }
 }
