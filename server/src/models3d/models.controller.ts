@@ -11,6 +11,7 @@ import {
   UploadedFile,
   Res,
   StreamableFile,
+  Query,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Models3DService } from './models.service';
@@ -28,6 +29,11 @@ export class Models3DController {
     private readonly models3DService: Models3DService,
     private readonly configService: ConfigService,
   ) {}
+
+  @Get()
+  getModels(@Query('search') search: string, @Query('page') page: number) {
+    return this.models3DService.getModels(search, page);
+  }
 
   @Get('file/:id')
   async downloadFileById(

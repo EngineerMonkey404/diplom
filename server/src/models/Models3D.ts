@@ -18,6 +18,9 @@ export class Models3D extends Model {
   @Column
   fileName: string;
 
+  // @Column
+  // previewImageName: string;
+
   @Column
   html: string;
 

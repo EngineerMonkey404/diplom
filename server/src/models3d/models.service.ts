@@ -6,6 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs/promises';
 import { join } from 'path';
 import { existsSync } from 'fs';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class Models3DService {
@@ -13,6 +14,14 @@ export class Models3DService {
     @InjectModel(Models3D) private readonly models3D: typeof Models3D,
     private readonly configService: ConfigService,
   ) {}
+
+  getModels(search: string, page: number) {
+    return this.models3D.findAll({
+      limit: 10,
+      offset: 10 * (page - 1),
+      where: { fileName: { [Op.like]: `%${search}%` } },
+    });
+  }
 
   async addModel(fileName: string, html: string) {
     return (await this.models3D.create({ fileName, html })).id;
