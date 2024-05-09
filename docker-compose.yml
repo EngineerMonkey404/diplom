@@ -20,13 +20,13 @@ services:
   #     - '5050:5050'
   #   depends_on:
   #     - db
-  server:
-    build: server/
-    restart: unless-stopped
-    command: npm run start:dev
-    ports:
-      - "3001:80"
-    depends_on:
-      - db
-    volumes:
-      - /server/src/storage:/usr/src/app/storage
+  # server:
+  #   build: server/
+  #   restart: unless-stopped
+  #   command: npm run start:dev
+  #   ports:
+  #     - "3001:80"
+  #   depends_on:
+  #     - db
+  #   volumes:
+  #     - /server/src/storage:/usr/src/app/storage
