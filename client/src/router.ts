@@ -4,7 +4,7 @@ import StartPage from "./pages/StartPage.vue"
 
 const routes = [
     { path: '/', component: StartPage },
-    { path: '/models/:id',name: 'modelView',  component: ModelView}
+    { path: '/models/:filename',name: 'modelView',  component: ModelView}
   ]
 
 export const router = createRouter({

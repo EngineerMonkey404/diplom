@@ -4,7 +4,10 @@
 <input type=file id="addFile" @change="handleFileChange"> -->
 <input placeholder="Поиск" v-model="search">
 <div>{{ search }}</div>
-<RouterLink v-for="model of models" :to="{name:'modelView', params: {id: model.id}}" class="block">{{ model.fileName }}</RouterLink>
+<template v-if="models.length">
+    <RouterLink v-for="model of models" :to="{name:'modelView', params: {filename: model.fileName}}" class="block">{{ model.fileName }}</RouterLink>
+</template>
+
 </template>
 
 <script setup lang="ts">

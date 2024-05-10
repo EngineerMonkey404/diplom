@@ -2,7 +2,7 @@
     <div class="relative h-screen w-screen">
     <canvas ref="canvas" class="h-full w-screen"></canvas>
     <div class="absolute right-0 top-0 bg-white bg-opacity-[60%] py-5 px-5">
-      <div>{{ route.params.id }}</div>
+      <div>{{ route.params.filename }}</div>
       <div @click="handleClick(mesh)" v-for="mesh in myScene?.meshes">
         {{ mesh.name }}
       </div>
@@ -32,7 +32,7 @@
   const currentDetail = ref('')
   
   onMounted(async () => {
-    const { engine, scene, hl }=await createScene(canvas.value, route.params.id)
+    const { engine, scene, hl }=await createScene(canvas.value, route.params.filename)
     myScene.value = scene
     myHl.value = hl
     //console.log(myScene.value)
