@@ -3,9 +3,12 @@
 @tailwind utilities;
 
 body {
-    margin: 0
+    margin: 0;
 }
 
 @layer base {
-    
 }
+.p-tabview-panels {
+    padding: 0;
+}
+

@@ -3,4 +3,5 @@
 .vscode
 .idea
 /server/src/storage/
-/postgres-data
+
+postgres-data

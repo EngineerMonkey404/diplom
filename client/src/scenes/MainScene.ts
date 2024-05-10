@@ -49,9 +49,9 @@ const createScene = async (canvas: HTMLCanvasElement, fileName:string) => {
     engine.runRenderLoop(() => {
         scene.render()
     });
-    window.addEventListener("resize", function () {
-        engine.resize();
-    });
+    // window.addEventListener("resize", function () {
+    //     engine.resize();
+    // });
     return { engine, scene, hl}
 };
 
