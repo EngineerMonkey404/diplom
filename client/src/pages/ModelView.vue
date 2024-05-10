@@ -35,7 +35,7 @@
     const { engine, scene, hl }=await createScene(canvas.value, route.params.filename)
     myScene.value = scene
     myHl.value = hl
-    //console.log(myScene.value)
+    console.log(myScene.value.meshes)
   })
   
   function handleClick(mesh: AbstractMesh) {

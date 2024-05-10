@@ -1,12 +1,15 @@
+import { DetailsDocumentation } from 'src/models/DetailsDocumentation';
 import {
   AllowNull,
   AutoIncrement,
   Column,
   DataType,
+  HasMany,
   Model,
   PrimaryKey,
   Table,
 } from 'sequelize-typescript';
+import { Models3DCollection } from './Models3DCollection';
 @Table({})
 export class Models3D extends Model {
   @PrimaryKey
@@ -18,13 +21,15 @@ export class Models3D extends Model {
   @Column
   fileName: string;
 
-  // @Column
-  // previewImageName: string;
+  @Column
+  previewImageName: string;
 
   @Column
   html: string;
 
-  // @AllowNull(true)
-  // @Column(DataType.ARRAY(DataType.INTEGER))
-  // views: number[];
+  @HasMany(() => Models3DCollection)
+  collection: string[];
+
+  @HasMany(() => DetailsDocumentation)
+  detailsDocumentation: DetailsDocumentation;
 }

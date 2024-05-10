@@ -10,13 +10,12 @@ import * as express from 'express';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  console.log(join(__dirname, '..', 'public'));
   const cs = app.get<ConfigService>(ConfigService);
   // as = app.get<AuthService>(AuthService);
 
   app.setGlobalPrefix('api');
-  app.use(bodyParser.json({ limit: '50mb' }));
-  app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+  // app.use(bodyParser.json({ limit: '50mb' }));
+  // app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
   const config = new DocumentBuilder()
     .setTitle('diplom')

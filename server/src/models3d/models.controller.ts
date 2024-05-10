@@ -17,7 +17,7 @@ import { Response } from 'express';
 import { Models3DService } from './models.service';
 import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import LocalFilesInterceptor from 'src/interceptors/local-files.interceptor';
-import { CreateCertificateModel3DDto } from './dto/CreateModel3DDto';
+import { CreateModel3DDto } from './dto/CreateModel3DDto';
 import { ConfigService } from '@nestjs/config';
 import { createReadStream } from 'fs';
 import { join } from 'path';
@@ -57,7 +57,7 @@ export class Models3DController {
 
   @ApiConsumes('multipart/form-data')
   @ApiBody({
-    type: CreateCertificateModel3DDto,
+    type: CreateModel3DDto,
   })
   @UseInterceptors(LocalFilesInterceptor('file', '/models3d'))
   @Put(':id')
@@ -78,7 +78,7 @@ export class Models3DController {
 
   @ApiConsumes('multipart/form-data')
   @ApiBody({
-    type: CreateCertificateModel3DDto,
+    type: CreateModel3DDto,
   })
   @Post()
   @UseInterceptors(LocalFilesInterceptor('file', '/models3d'))

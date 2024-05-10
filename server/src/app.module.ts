@@ -5,6 +5,8 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { Models3DModule } from './models3d/models.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { DetailsDocumentationModule } from './details-documentation/details-documentation.module';
+import { Models3DCollectionModule } from './model3d-collections/models3DCollection.module';
 
 @Module({
   imports: [
@@ -12,10 +14,6 @@ import { join } from 'path';
       envFilePath: `${process.env.NODE_ENV}.env`,
       isGlobal: true,
     }),
-    // ServeStaticModule.forRoot({
-    //   rootPath: join(__dirname, '..', 'public'),
-    //   serveStaticOptions: { index: false },
-    // }),
 
     SequelizeModule.forRootAsync({
       imports: [ConfigModule],
@@ -24,6 +22,8 @@ import { join } from 'path';
     }),
 
     Models3DModule,
+    DetailsDocumentationModule,
+    Models3DCollectionModule,
   ],
   providers: [SequelizeConfigService],
 })

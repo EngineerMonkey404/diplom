@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateCertificateModel3DDto {
+export class CreateModel3DDto {
   @ApiProperty()
   html: string;
 
