@@ -3,7 +3,7 @@ import {Engine} from "babylonjs";
 import 'babylonjs-loaders';
 import { httpClient } from "../axiosInstance";
 
-const createScene = async (canvas: HTMLCanvasElement, id:number) => {
+const createScene = async (canvas: HTMLCanvasElement, fileName:string) => {
     const engine = new Engine(canvas, true, { stencil: true })
     // Creates a basic Babylon Scene object
     const scene = new BABYLON.Scene(engine);
@@ -25,10 +25,10 @@ const createScene = async (canvas: HTMLCanvasElement, id:number) => {
         scene);
     // Dim the light a small amount 0 - 1
     light.intensity = 0.8;
-    let file = (await httpClient.get(`models/file/${id}`)).data
-    console.log('file', file)
+    // let file = (await httpClient.get(`models/file/${id}`)).data
+    // console.log('file', file)
     // file = btoa(file)
-    const model = await BABYLON.SceneLoader.ImportMeshAsync("", "http://localhost:3000/", "dbtWithoutBound.glb", scene)
+    const model = await BABYLON.SceneLoader.ImportMeshAsync("", "http://localhost:3001/public/", fileName, scene)
     scene.createDefaultCameraOrLight(true, true, true);
     scene.activeCamera.alpha += Math.PI/3;
 

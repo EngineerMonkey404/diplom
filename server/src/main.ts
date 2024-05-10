@@ -3,10 +3,14 @@ import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import * as bodyParser from 'body-parser';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
+import * as express from 'express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
+  console.log(join(__dirname, '..', 'public'));
   const cs = app.get<ConfigService>(ConfigService);
   // as = app.get<AuthService>(AuthService);
 
@@ -30,7 +34,10 @@ async function bootstrap() {
     credentials: true,
   });
   // app.use(cookieParser(as.secretKey));
-
+  app.use(
+    '/public',
+    express.static(join(__dirname, '..', '/src/storage/models3d')),
+  );
   app.listen(cs.get('PORT'));
 }
 bootstrap();
