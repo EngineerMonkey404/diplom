@@ -27,8 +27,8 @@ const createScene = async (canvas: HTMLCanvasElement, id:number) => {
     light.intensity = 0.8;
     let file = (await httpClient.get(`models/file/${id}`)).data
     console.log('file', file)
-    file = btoa(file)
-    const model = await BABYLON.SceneLoader.Append("", "data:;base64,BASE 64 " + file, scene)
+    // file = btoa(file)
+    const model = await BABYLON.SceneLoader.ImportMeshAsync("", "http://localhost:3000/", "dbtWithoutBound.glb", scene)
     scene.createDefaultCameraOrLight(true, true, true);
     scene.activeCamera.alpha += Math.PI/3;
 
@@ -49,9 +49,9 @@ const createScene = async (canvas: HTMLCanvasElement, id:number) => {
     engine.runRenderLoop(() => {
         scene.render()
     });
-    window.addEventListener("resize", function () {
-        engine.resize();
-    });
+    // window.addEventListener("resize", function () {
+    //     engine.resize();
+    // });
     return { engine, scene, hl}
 };
 
