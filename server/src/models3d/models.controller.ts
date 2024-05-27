@@ -21,6 +21,8 @@ import { CreateModel3DDto } from './dto/CreateModel3DDto';
 import { ConfigService } from '@nestjs/config';
 import { createReadStream } from 'fs';
 import { join } from 'path';
+import { UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('Модели')
 @Controller('models')
@@ -35,20 +37,20 @@ export class Models3DController {
     return this.models3DService.getModels(search, page);
   }
 
-  @Get('file/:id')
-  async downloadFileById(
-    @Res({ passthrough: true }) res: Response,
-    @Param('id') id: number,
-  ) {
-    const file = await this.models3DService.getFileById(id);
-    res.set('Content-Disposition', `attachment; filename="${file}"`);
+  // @Get('file/:id')
+  // async downloadFileById(
+  //   @Res({ passthrough: true }) res: Response,
+  //   @Param('id') id: number,
+  // ) {
+  //   const file = await this.models3DService.getFileById(id);
+  //   res.set('Content-Disposition', `attachment; filename="${file}"`);
 
-    return new StreamableFile(
-      createReadStream(
-        join(process.cwd(), this.configService.get('MODELS3D_PATH'), file),
-      ),
-    );
-  }
+  //   return new StreamableFile(
+  //     createReadStream(
+  //       join(process.cwd(), this.configService.get('MODELS3D_PATH'), file),
+  //     ),
+  //   );
+  // }
 
   @Get(':id')
   getModel(@Param('id', ParseIntPipe) id: number) {
@@ -60,6 +62,7 @@ export class Models3DController {
     type: CreateModel3DDto,
   })
   @UseInterceptors(LocalFilesInterceptor('file', '/models3d'))
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   updateModel(
     @Body() body: { html: string },
@@ -80,6 +83,7 @@ export class Models3DController {
   @ApiBody({
     type: CreateModel3DDto,
   })
+  @UseGuards(JwtAuthGuard)
   @Post()
   @UseInterceptors(LocalFilesInterceptor('file', '/models3d'))
   addModel(
@@ -89,6 +93,7 @@ export class Models3DController {
     return this.models3DService.addModel(file.originalname, body.html);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   deleteModel(@Param('id', ParseIntPipe) id: number) {
     this.models3DService.deleteModel(id);

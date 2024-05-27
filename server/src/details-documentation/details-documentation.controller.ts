@@ -8,10 +8,12 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CreateDetailsDocumentationDto } from './dto/CreateDetailsDocumentationDto';
 import { DetailsDocumentationService } from './details-documentation.service';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @ApiTags('Документация к деталям')
 @Controller('documentation')
@@ -33,6 +35,7 @@ export class DetailsDocumentationController {
   @ApiBody({
     type: CreateDetailsDocumentationDto,
   })
+  @UseGuards(JwtAuthGuard)
   @Put('/:modelid/:detailid')
   updateCollection(
     @Param('modelid', ParseIntPipe) modelId: number,
@@ -45,6 +48,7 @@ export class DetailsDocumentationController {
     );
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete('/:modelid/:detailid')
   deleteCollection(
     @Param('modelid', ParseIntPipe) modelId: number,
@@ -57,6 +61,7 @@ export class DetailsDocumentationController {
   @ApiBody({
     type: CreateDetailsDocumentationDto,
   })
+  @UseGuards(JwtAuthGuard)
   @Post()
   createDocumentation(@Body() documentation: CreateDetailsDocumentationDto) {
     console.log(documentation);

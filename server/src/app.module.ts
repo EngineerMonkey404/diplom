@@ -7,6 +7,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { DetailsDocumentationModule } from './details-documentation/details-documentation.module';
 import { Models3DCollectionModule } from './model3d-collections/models3DCollection.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { Models3DCollectionModule } from './model3d-collections/models3DCollecti
     Models3DModule,
     DetailsDocumentationModule,
     Models3DCollectionModule,
+    AuthModule,
   ],
   providers: [SequelizeConfigService],
 })
