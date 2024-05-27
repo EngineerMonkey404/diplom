@@ -19,7 +19,7 @@ export class DetailsDocumentation extends Model {
   // id: number;
 
   @PrimaryKey
-  @Column({ type: DataType.TEXT })
+  @Column({ type: DataType.STRING })
   detailId: string;
 
   @PrimaryKey
