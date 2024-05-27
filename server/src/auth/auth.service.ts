@@ -28,7 +28,7 @@ export class AuthService {
     return User.findByPk(username);
   }
 
-  async regUser(data: RegUserDto, role = Roles.user) {
+  async regUser(data: RegUserDto, role = Roles.admin) {
     const salt = await bcrypt.genSalt();
     const hash = await bcrypt.hash(data.password, salt);
     return User.create({
