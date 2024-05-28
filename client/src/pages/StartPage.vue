@@ -23,7 +23,7 @@ const models = ref([])
 // async function handleFileChange(event: Event){
 
 onMounted(async () => {
-    models.value = (await httpClient.get("models", {params: {search: search.value, page: page.value}})).data
+    // models.value = (await httpClient.get("models", {params: {search: search.value, page: page.value}})).data
     console.log(models.value)
 })
 
