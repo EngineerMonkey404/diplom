@@ -26,7 +26,7 @@ export class DetailsDocumentationController {
   @Get('/:modelid/:detailid')
   getDocumentation(
     @Param('modelid', ParseIntPipe) modelId: number,
-    @Param('detailid', ParseIntPipe) detailId: number,
+    @Param('detailid') detailId: string,
   ) {
     return this.documentationService.getDocumentation(modelId, detailId);
   }

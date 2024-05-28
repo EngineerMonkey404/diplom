@@ -9,8 +9,7 @@ import {
   UseInterceptors,
   Body,
   UploadedFile,
-  Res,
-  StreamableFile,
+  UploadedFiles,
   Query,
 } from '@nestjs/common';
 import { Response } from 'express';
@@ -23,14 +22,37 @@ import { createReadStream } from 'fs';
 import { join } from 'path';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import {
+  FileFieldsInterceptor,
+  FilesInterceptor,
+} from '@nestjs/platform-express';
+import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
+import { diskStorage } from 'multer';
+import LocalMultipleFilesInterceptor from 'src/interceptors/local-multiple-files.interceptor';
 
 @ApiTags('Модели')
 @Controller('models')
 export class Models3DController {
+  multerOptions: MulterOptions;
   constructor(
     private readonly models3DService: Models3DService,
     private readonly configService: ConfigService,
-  ) {}
+  ) {
+    // this.multerOptions= {
+    //   limits: {
+    //     fieldSize: 52428800,
+    //   },
+    //   storage: diskStorage({
+    //     destination: configService.get('STORAGE_PATH') + ,
+    //     filename: (req, file, callback) => {
+    //       callback(
+    //         null,
+    //         Buffer.from(file.originalname, 'latin1').toString('utf-8'),
+    //       );
+    //     },
+    //   }),
+    // };
+  }
 
   @Get()
   getModels(@Query('search') search: string, @Query('page') page: number) {
@@ -61,22 +83,31 @@ export class Models3DController {
   @ApiBody({
     type: CreateModel3DDto,
   })
-  @UseInterceptors(LocalFilesInterceptor('file', '/models3d'))
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(
+    LocalMultipleFilesInterceptor(
+      [
+        { name: 'image', maxCount: 1 },
+        { name: 'file', maxCount: 1 },
+      ],
+      '/models3d',
+    ),
+  )
   @Put(':id')
   updateModel(
     @Body() body: { html: string },
-    @UploadedFile() file: Express.Multer.File,
     @Param('id', ParseIntPipe) id: number,
+    @UploadedFiles()
+    files: { image?: Express.Multer.File[]; file?: Express.Multer.File[] },
   ) {
-    this.models3DService.updateModel(
-      {
-        fileName: file.originalname,
-        html: body.html,
-        id,
-      },
-      file,
-    );
+    const file = files.file[0];
+    const image = files.image[0];
+    this.models3DService.updateModel({
+      fileName: file.originalname,
+      html: body.html,
+      previewImageName: image.originalname,
+      id,
+    });
   }
 
   @ApiConsumes('multipart/form-data')
@@ -85,12 +116,27 @@ export class Models3DController {
   })
   @UseGuards(JwtAuthGuard)
   @Post()
-  @UseInterceptors(LocalFilesInterceptor('file', '/models3d'))
+  @UseInterceptors(
+    LocalMultipleFilesInterceptor(
+      [
+        { name: 'image', maxCount: 1 },
+        { name: 'file', maxCount: 1 },
+      ],
+      '/models3d',
+    ),
+  )
   addModel(
     @Body() body: { html: string },
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFiles()
+    files: { image?: Express.Multer.File[]; file?: Express.Multer.File[] },
   ) {
-    return this.models3DService.addModel(file.originalname, body.html);
+    const file = files.file[0];
+    const image = files.image[0];
+    return this.models3DService.addModel(
+      file.originalname,
+      body.html,
+      image.originalname,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
