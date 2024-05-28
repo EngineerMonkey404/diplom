@@ -31,36 +31,61 @@ export class Models3DService {
     });
   }
 
-  async addModel(fileName: string, html: string) {
-    return (await this.models3D.create({ fileName, html })).id;
+  async addModel(fileName: string, html: string, previewImageName: string) {
+    return (await this.models3D.create({ fileName, html, previewImageName }))
+      .id;
   }
 
-  async updateModel(model3d: IModels3D, newFile: Express.Multer.File) {
-    const prevFile = (
-      await this.models3D.findOne({ where: { id: model3d.id } })
-    ).fileName;
-    const p = join(
+  async updateModel(model3d: IModels3D) {
+    const prevModel = await this.models3D.findOne({
+      where: { id: model3d.id },
+    });
+
+    const prevFile = prevModel.fileName;
+    const prevPreviewImage = prevModel.previewImageName;
+    const pf = join(
       process.cwd(),
       this.configService.get('MODELS3D_PATH'),
       prevFile,
     );
-    if (existsSync(p)) await fs.unlink(p);
+    const pi = join(
+      process.cwd(),
+      this.configService.get('MODELS3D_PATH'),
+      prevPreviewImage,
+    );
+    if (existsSync(pf)) await fs.unlink(pf);
+    if (existsSync(pi)) await fs.unlink(pi);
     this.models3D.update(model3d, { where: { id: model3d.id } });
   }
 
   async deleteModel(id: number) {
-    const prevFile = (await this.models3D.findOne({ where: { id } })).fileName;
-    const p = join(
+    const prevModel = await this.models3D.findOne({
+      where: { id },
+    });
+
+    const prevFile = prevModel.fileName;
+    const prevPreviewImage = prevModel.previewImageName;
+    const pf = join(
       process.cwd(),
       this.configService.get('MODELS3D_PATH'),
       prevFile,
     );
-    if (existsSync(p)) await fs.unlink(p);
+    const pi = join(
+      process.cwd(),
+      this.configService.get('MODELS3D_PATH'),
+      prevPreviewImage,
+    );
+    if (existsSync(pf)) await fs.unlink(pf);
+    if (existsSync(pi)) await fs.unlink(pi);
+
     this.models3D.destroy({ where: { id } });
   }
 
   getModel(id: number) {
-    return this.models3D.findOne({ where: { id } });
+    return this.models3D.findOne({
+      where: { id },
+      include: [this.models3DCollection, this.detailsDocumentation],
+    });
   }
 
   async getFileById(id: number) {

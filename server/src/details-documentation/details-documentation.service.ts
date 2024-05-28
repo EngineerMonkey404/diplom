@@ -12,7 +12,7 @@ export class DetailsDocumentationService {
     private readonly configService: ConfigService,
   ) {}
 
-  getDocumentation(modelId: number, detailId: number) {
+  getDocumentation(modelId: number, detailId: string) {
     return this.detailsDocumentation.findOne({ where: { modelId, detailId } });
   }
   async createDocumentation(documentation: CreateDetailsDocumentationDto) {

@@ -9,4 +9,10 @@ export class CreateModel3DDto {
     format: 'binary',
   })
   file: any;
+
+  @ApiProperty({
+    type: 'string',
+    format: 'binary',
+  })
+  image: any;
 }

@@ -24,7 +24,7 @@ export class Models3D extends Model {
   @Column
   previewImageName: string;
 
-  @Column
+  @Column({ type: DataType.TEXT })
   html: string;
 
   @HasMany(() => Models3DCollection)
