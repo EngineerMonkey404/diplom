@@ -1,5 +1,8 @@
 <template>
-  <div class="container mx-auto relative">
+  <div
+    v-if="currentModel"
+    class="container mx-auto relative"
+  >
     <RouterLink
       class="absolute top-[-6px] link-style"
       to="/"
@@ -8,7 +11,10 @@
     </RouterLink>
     <h2 class="text-center my-[30px]">Добавление модели</h2>
     <h3 class="mb-[20px]">Раздел документации</h3>
-    <DocsEditor v-model="documentation" content=""/>
+    <DocsEditor
+      v-model="currentModel.html"
+      content=""
+    />
     <input
       @change="onSelect($event)"
       id="file-input"
@@ -25,10 +31,15 @@
       v-if="meshes.length"
       class="my-[100px]"
     >
-      <button class="btn-style" @click="addDetailDoc()">Добавить описание детали</button>
+      <button
+        class="btn-style"
+        @click="addDetailDoc()"
+      >
+        Добавить описание детали
+      </button>
       <div class="grid grid-cols-2 gap-[50px] mt-[20px]">
         <div
-          v-for="(detail, index) in details"
+          v-for="(detail, index) in currentModel.detailsDocumentation"
           :key="index"
           class="flex gap-x-[50px]"
         >
@@ -52,10 +63,15 @@
       v-if="meshes.length"
       class="mb-[100px]"
     >
-      <button class="btn-style" @click="addNode()">Добавить узел</button>
+      <button
+        class="btn-style"
+        @click="addNode()"
+      >
+        Добавить узел
+      </button>
       <div class="grid grid-cols-2 gap-[50px] mt-[20px] mb-[40px]">
         <div
-          v-for="(node, index) in nodes"
+          v-for="(node, index) in currentModel.collection"
           :key="index"
           class="flex gap-x-[50px]"
         >
@@ -74,7 +90,12 @@
         </div>
       </div>
       <div class="text-center">
-        <button class="btn-style" @click="handleCreate()">Создать модель</button>
+        <button
+          class="btn-style"
+          @click="handleUpdate()"
+        >
+          Обновить модель
+        </button>
       </div>
     </div>
   </div>
@@ -85,31 +106,44 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import DocsEditor from '../../components/DocsEditor.vue'
 import { createAdminScene } from '../../scenes/AdminScene'
+import { createScene } from '../../scenes/MainScene'
 import { Scene } from 'babylonjs'
 import Dropdown from 'primevue/dropdown'
 import MultiSelect from 'primevue/multiselect'
 import { httpClient } from '../../axiosInstance'
-import { DetailDoc, Collection } from '../../types'
-import { useRouter } from 'vue-router'
+import { DetailDoc, Collection, Model } from '../../types'
+import { useRouter, useRoute } from 'vue-router'
 
 const canvas = ref(null)
 const myScene = ref<Scene>()
 
 const router = useRouter()
-
-const details = ref<DetailDoc[]>([])
+const route = useRoute()
 
 const meshes = ref<string[]>([])
 
-const nodes = ref<Collection[]>([])
-
 const image = ref('')
-const documentation = ref('')
 
 const model = new FormData()
+
+const currentModel = ref<Model | null>(null)
+
+onMounted(async () => {
+  currentModel.value = (await httpClient.get(`/models/${route.params.id}`)).data
+  if (canvas.value) {
+    const { engine, scene } = await createScene(
+      canvas.value,
+      currentModel.value?.fileName || '',
+    )
+    myScene.value = scene
+    meshes.value = myScene.value.meshes
+      .map(mesh => mesh.id)
+      .filter(node => node !== '__root__')
+  }
+})
 
 async function onSelect(event: any) {
   if (model.has('file')) {
@@ -145,30 +179,40 @@ async function onSelect(event: any) {
 }
 
 function addDetailDoc() {
-  if (!details.value.length || details.value.at(-1)?.detailId) {
-    details.value.push({ detailId: '', documentation: '', modelId: 0 })
+  if (
+    !currentModel.value?.detailsDocumentation.length ||
+    currentModel.value?.detailsDocumentation.at(-1)?.detailId
+  ) {
+    currentModel.value?.detailsDocumentation.push({
+      detailId: '',
+      documentation: '',
+      modelId: 0,
+    })
   }
 }
 
 function addNode() {
-  if (!nodes.value.length || nodes.value.at(-1)?.title) {
-    nodes.value.push({ title: '', details: [], modelId: 0 })
+  if (
+    !currentModel.value?.collection.length ||
+    currentModel.value?.collection.at(-1)?.title
+  ) {
+    currentModel.value?.collection.push({ title: '', details: [], modelId: 0 })
   }
 }
 
-async function handleCreate() {
-  model.append('html', documentation.value)
+async function handleUpdate() {
+  model.append('html', currentModel.value?.html || '')
   let id = await (await httpClient.post('/models', model)).data
-  let requests = details.value.map(detail => {
+  let requests = currentModel.value?.detailsDocumentation.map(detail => {
     detail.modelId = id
-    return httpClient.post('/documentation', detail)
+    return httpClient.post(`/documentation/${detail.modelId}/${detail.detailId}`, detail)
   })
 
-  let requestsCollection = nodes.value.map(node => {
+  let requestsCollection = currentModel.value?.collection.map(node => {
     node.modelId = id
-    return httpClient.post('/collection', node)
+    return httpClient.post(`/collection/${node.id}`, node)
   })
-  Promise.all([...requests, ...requestsCollection])
+  Promise.all([...requests!, ...requestsCollection!])
 
   router.push('/')
 }

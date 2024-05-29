@@ -1,32 +1,28 @@
 <template>
-  <div class="h-screen w-screen flex flex-col relative">
+  <div class="h-screen w-screen flex flex-col relative bg-[#F7F5FF]">
     <div class="flex w-[80%] justify-center py-[10px] gap-x-[40px]">
       <RouterLink
-        class="absolute top-[10px] left-[10px]"
+        class="absolute top-[10px] left-[10px] btn-style"
         to="/"
       >
-        back
+        Назад
       </RouterLink>
       <button
         class="btn-style"
         @click="currentWindow = 'Модель'"
-        :class="currentWindow === 'Модель' ? 'bg-gray-100' : ''"
+        :class="currentWindow === 'Модель' ? 'bg-[#694DF9] text-white' : ''"
       >
         Модель
       </button>
       <button
         class="btn-style"
         @click="currentWindow = 'Документация'"
-        :class="currentWindow === 'Документация' ? 'bg-gray-100' : ''"
+        :class="
+          currentWindow === 'Документация' ? 'bg-[#694DF9] text-white' : ''
+        "
       >
         Документация
       </button>
-      <RouterLink
-        class="absolute top-[10px] right-[21%]"
-        to="/admin/login"
-      >
-        Войти
-      </RouterLink>
     </div>
     <div
       v-show="currentWindow === 'Модель'"
@@ -38,16 +34,41 @@
           class="grow object-cover"
         ></canvas>
 
-        <div class="bg-white p-[10px] flex gap-[20px]">
-          <button @click="clipY()">clipY</button>
-          <button @click="clipX()">clipX</button>
-          <button @click="clipZ()">clipZ</button>
-          <button @click="resetClip()">reset clip</button>
-          <button @click="resetElements()">reset choosen elements</button>
+        <div class="p-[10px] flex gap-[20px]">
+          <button
+            class="btn-style"
+            @click="clipY()"
+          >
+            clipY
+          </button>
+          <button
+            class="btn-style"
+            @click="clipX()"
+          >
+            clipX
+          </button>
+          <button
+            class="btn-style"
+            @click="clipZ()"
+          >
+            clipZ
+          </button>
+          <button
+            class="btn-style"
+            @click="resetClip()"
+          >
+            reset clip
+          </button>
+          <button
+            class="btn-style"
+            @click="resetElements()"
+          >
+            reset choosen elements
+          </button>
         </div>
       </div>
       <Splitter
-        class="absolute right-0 top-0 h-full bg-white w-[20%] rounded-none"
+        class="absolute right-0 top-0 h-full w-[20%] rounded-none bg-[#F7F5FF]"
         layout="vertical"
       >
         <SplitterPanel
@@ -216,4 +237,8 @@ function changeDetail(detailId: string) {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.btn-style {
+  @apply px-[15px] py-[5px] rounded-[16px] border border-[#694DF9] transition-colors duration-300 hover:text-[#694DF9];
+}
+</style>

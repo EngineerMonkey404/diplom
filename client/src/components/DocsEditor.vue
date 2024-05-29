@@ -61,19 +61,21 @@
       redo
     </button>
   </div>
-  <editor-content :editor="editor" class="h-[700px] border p-[20px] rounded-lg mb-[30px] overflow-y-auto"/>
+  <editor-content :editor="editor" class="h-[500px] border p-[20px] rounded-lg mb-[30px] overflow-y-auto"/>
 </template>
 
 <script setup lang="ts">
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 
+const props = defineProps<{ content: string }>()
+
 const emit = defineEmits<{
   (e: "update:modelValue", html: string): void
 }>()
 
 const editor = useEditor({
-  content: '<p>I’m running Tiptap with Vue.js. 🎉</p>',
+  content: props.content,
   extensions: [StarterKit],
   editorProps: {
     attributes: {

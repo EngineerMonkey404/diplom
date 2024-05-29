@@ -4,6 +4,7 @@ import StartPage from './pages/StartPage.vue'
 import AdminPage from './pages/admin/AdminPage.vue'
 import CreateModelPage from './pages/admin/CreateModelPage.vue'
 import LoginPage from './pages/admin/LoginPage.vue'
+import UpdateModelPage from './pages/admin/UpdateModelPage.vue'
 import { useCookies } from 'vue3-cookies'
 
 const routes = [
@@ -11,6 +12,7 @@ const routes = [
   { path: '/models/:id', name: 'modelView', component: ModelView },
   { path: '/admin', component: AdminPage },
   { path: '/admin/create-model', component: CreateModelPage },
+  { path: '/admin/update-model/:id', name: 'updateModel', component: UpdateModelPage },
   { path: '/admin/login', component: LoginPage },
 ]
 

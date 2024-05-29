@@ -4,6 +4,7 @@
 
 body {
   margin: 0;
+  color: #220F80;
 }
 
 @layer base {
@@ -21,7 +22,24 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #E5E4E2;
+  background: #e3dcff;
   border-radius: 10px;
 }
 
+
+.input-style {
+  @apply outline-none px-[12px] py-[6px] border border-[#694DF9] rounded-[4px] text-[#220F80] transition-colors focus:bg-[#e3dcff]/20;
+}
+
+.p-highlight {
+  background-color: #e3dcff;
+  color: #220F80;
+}
+
+.p-highlight .p-checkbox-box {
+  background-color: #e3dcff;
+}
+
+.link-style {
+  @apply px-[12px] py-[6px] bg-[#220F80] text-white rounded-[16px] transition-colors hover:text-[#220F80] hover:bg-[#e3dcff]/20;
+}

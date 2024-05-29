@@ -1,8 +1,9 @@
 <template>
-  <div class="flex justify-center items-center">
-    <div>
-      <InputText placeholder="Введите логин" type="text" v-model="user.username" />
-      <InputText placeholder="Введите пароль" type="text" v-model="user.password" />
+  <div class="flex justify-center items-center h-screen">
+    <div class="flex flex-col gap-y-[20px]">
+      <h3>Авторизация</h3>
+      <input class="input-style" placeholder="Введите логин" type="text" v-model="user.username" />
+      <input class="input-style" placeholder="Введите пароль" type="text" v-model="user.password" />
       <button @click="handleLogin()">Войти</button>
     </div>
   </div>
@@ -10,7 +11,6 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import InputText from 'primevue/inputtext'
 import { httpClient } from '../../axiosInstance';
 import { useRouter } from 'vue-router';
 import { useCookies } from "vue3-cookies";
@@ -35,3 +35,9 @@ async function handleLogin() {
   }
 }
 </script>
+
+<style scoped>
+.btn-style {
+  @apply px-[15px] py-[5px] rounded-[16px] border border-[#694DF9] transition-colors duration-300 hover:text-[#694DF9];
+}
+</style>

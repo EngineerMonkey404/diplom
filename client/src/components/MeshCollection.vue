@@ -4,14 +4,14 @@
       <button
         class="btn-style"
         @click="currentWindow = 'Узлы'"
-        :class="currentWindow === 'Узлы' ? 'bg-gray-100' : ''"
+        :class="currentWindow === 'Узлы' ? 'bg-[#694DF9] text-white' : ''"
       >
         Узлы
       </button>
       <button
         class="btn-style"
         @click="currentWindow = 'Элементы'"
-        :class="currentWindow === 'Элементы' ? 'bg-gray-100' : ''"
+        :class="currentWindow === 'Элементы' ? 'bg-[#694DF9] text-white' : ''"
       >
         Элементы
       </button>
@@ -23,8 +23,8 @@
       <li
         v-for="(collection, index) in props.collections"
         :key="index"
-        class="px-[5px] cursor-pointer hover:bg-gray-200 border-b"
-        :class="currentCollections.includes(collection) ? 'bg-gray-100' : ''"
+        class="px-[5px] cursor-pointer border-b"
+        :class="currentCollections.includes(collection) ? 'text-[#694DF9]' : ''"
         @click="handleCollection(collection)"
       >
         {{ collection.title }}
@@ -36,8 +36,8 @@
     >
       <li
         v-for="mesh in props.meshes"
-        class="px-[5px] cursor-pointer hover:bg-gray-200 border-b"
-        :class="currentDetails.includes(mesh.id) ? 'bg-gray-100' : ''"
+        class="px-[5px] cursor-pointer border-b"
+        :class="currentDetails.includes(mesh.id) ? 'text-[#694DF9]' : ''"
         @click="handleDetail(mesh.id)"
       >
         {{ mesh.id }}

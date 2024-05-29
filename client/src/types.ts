@@ -8,6 +8,7 @@ export interface Model {
 }
 
 export interface Collection {
+  id?: number
   modelId: number
   title: string
   details: string[]

@@ -3,7 +3,7 @@ import { Engine } from 'babylonjs'
 import 'babylonjs-loaders'
 import { httpClient } from '../axiosInstance'
 
-const createScene = async (canvas: HTMLCanvasElement, file: File) => {
+const createAdminScene = async (canvas: HTMLCanvasElement, file: File) => {
   const engine = new Engine(canvas, true, { stencil: true })
 
   const scene = new BABYLON.Scene(engine)
@@ -38,4 +38,4 @@ const createScene = async (canvas: HTMLCanvasElement, file: File) => {
   return { engine, scene, hl }
 }
 
-export { createScene,  }
+export { createAdminScene,  }
