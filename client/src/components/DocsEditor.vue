@@ -68,6 +68,10 @@
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 
+const emit = defineEmits<{
+  (e: "update:modelValue", html: string): void
+}>()
+
 const editor = useEditor({
   content: '<p>I’m running Tiptap with Vue.js. 🎉</p>',
   extensions: [StarterKit],
@@ -75,6 +79,9 @@ const editor = useEditor({
     attributes: {
       class: "focus:outline-none",
     },
+  },
+  onUpdate: () => {
+    emit("update:modelValue", editor.value!.getHTML())
   },
 })
 </script>

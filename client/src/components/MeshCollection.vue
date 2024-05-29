@@ -21,13 +21,13 @@
       class="overflow-auto grow"
     >
       <li
-        v-for="(node, index) in props.nodes"
+        v-for="(collection, index) in props.collections"
         :key="index"
         class="px-[5px] cursor-pointer hover:bg-gray-200 border-b"
-        :class="currentNodes.includes(node) ? 'bg-gray-100' : ''"
-        @click="handleNode(node)"
+        :class="currentCollections.includes(collection) ? 'bg-gray-100' : ''"
+        @click="handleCollection(collection)"
       >
-        {{ node.name }}
+        {{ collection.title }}
       </li>
     </ul>
     <ul
@@ -37,10 +37,10 @@
       <li
         v-for="mesh in props.meshes"
         class="px-[5px] cursor-pointer hover:bg-gray-200 border-b"
-        :class="currentMeshes.includes(mesh.name) ? 'bg-gray-100' : ''"
-        @click="handleMesh(mesh.name)"
+        :class="currentDetails.includes(mesh.id) ? 'bg-gray-100' : ''"
+        @click="handleDetail(mesh.id)"
       >
-        {{ mesh.name }}
+        {{ mesh.id }}
       </li>
     </ul>
   </div>
@@ -48,61 +48,62 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { AbstractMesh } from 'babylonjs/Meshes/abstractMesh'
-
-interface Node {
-  name: string
-  elements: string[]
-}
+import { DetailDoc, Collection } from '../types';
+import { AbstractMesh } from 'babylonjs';
 
 const props = defineProps<{
+  details: DetailDoc[]
+  collections: Collection[]
   meshes: AbstractMesh[]
-  nodes: Node[]
 }>()
 const emit = defineEmits(['change-current-detail'])
 
 const currentWindow = ref('Узлы')
-const currentMeshes = ref<string[]>([])
-const currentNodes = ref<Node[]>([])
+const currentDetails = ref<string[]>([])
+const currentCollections = ref<Collection[]>([])
 
-function handleMesh(meshName: string) {
-  let index = currentMeshes.value.findIndex(mesh => mesh === meshName)
+function handleDetail(detailId: string) {
+  let index = currentDetails.value.findIndex(mesh => mesh === detailId)
   if (index === -1) {
-    currentMeshes.value.push(meshName)
+    currentDetails.value.push(detailId)
   } else {
-    currentMeshes.value.splice(index, 1)
+    currentDetails.value.splice(index, 1)
   }
   props.meshes.forEach(mesh => {
     if (mesh.name !== '__root__') {
-      if (!currentMeshes.value.includes(mesh.name)) {
+      if (!currentDetails.value.includes(mesh.name)) {
         mesh.setEnabled(false)
       } else {
         mesh.setEnabled(true)
       }
     }
   })
-  currentNodes.value = []
-  emit('change-current-detail', meshName)
+  currentCollections.value = []
+  if (props.details.flatMap(detail => detail.detailId).includes(detailId)) {
+    emit('change-current-detail', detailId)
+  } else {
+    emit('change-current-detail', '')
+  }
 }
 
-function handleNode(currNode: Node) {
-  let index = currentNodes.value.findIndex(node => node.name === currNode.name)
+function handleCollection(currCollection: Collection) {
+  let index = currentCollections.value.findIndex(collection => collection.title === currCollection.title)
   if (index === -1) {
-    currentNodes.value.push(currNode)
+    currentCollections.value.push(currCollection)
   } else {
-    currentNodes.value.splice(index, 1)
+    currentCollections.value.splice(index, 1)
   }
-  let choosenElements = currentNodes.value.flatMap(node => node.elements)
+  let choosenElements = currentCollections.value.flatMap(collection => collection.details)
   props.meshes.forEach(mesh => {
-    if (mesh.name !== '__root__') {
-      if (!choosenElements.includes(mesh.name)) {
+    if (mesh.id !== '__root__') {
+      if (!choosenElements.includes(mesh.id)) {
         mesh.setEnabled(false)
       } else {
         mesh.setEnabled(true)
       }
     }
   })
-  currentMeshes.value = []
+  currentDetails.value = []
   emit('change-current-detail', '')
 }
 </script>

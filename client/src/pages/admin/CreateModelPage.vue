@@ -2,8 +2,8 @@
   <div class="container mx-auto">
     <h2 class="text-center my-[30px]">Добавление модели</h2>
     <h3 class="mb-[20px]">Раздел документации</h3>
-    <DocsEditor />
-
+    <DocsEditor v-model="documentation"/>
+    {{ documentation }}
     <FileUpload
       mode="advanced"
       :showUploadButton="false"
@@ -12,6 +12,7 @@
       @select="onSelect"
     />
     <img
+      v-if="image"
       class="w-[100px] h-[100px] object-cover"
       :src="image"
       alt=""
@@ -61,7 +62,7 @@
           placeholder="Выберите детали"
         />
       </div>
-      {{ nodes }}
+      <button @click="handleCreate()">Создать модель</button>
     </div>
   </div>
   <canvas
@@ -81,45 +82,83 @@ import Dropdown from 'primevue/dropdown'
 import Textarea from 'primevue/textarea'
 import MultiSelect from 'primevue/multiselect'
 import InputText from 'primevue/inputtext'
+import { httpClient } from '../../axiosInstance'
+import { DetailDoc, Collection } from '../../types'
 
 const canvas = ref(null)
 const myScene = ref<Scene>()
 
-const details = ref<{ detailId: string; documentation: string }[]>([])
+const details = ref<DetailDoc[]>([])
 
 const meshes = ref<string[]>([])
 
-const nodes = ref<{ title: string; details: string[] }[]>([])
+const nodes = ref<Collection[]>([])
 
 const image = ref('')
+const documentation = ref('')
+
+const model = new FormData()
 
 async function onSelect(event: FileUploadSelectEvent) {
   console.log(event.files[0])
   if (canvas.value && event.files[0]) {
     const { engine, scene } = await createScene(canvas.value, event.files[0])
     myScene.value = scene
-    console.log(myScene.value.meshes)
     meshes.value = myScene.value.meshes
       .map(mesh => mesh.id)
       .filter(node => node !== '__root__')
-
+    model.append('file', event.files[0])
     scene.onReadyObservable.add(() => {
-      BABYLON.Tools.CreateScreenshot(engine, scene.activeCamera, { precision: 1.0 }, (data) => {
-        image.value = data
-      })
+      BABYLON.Tools.CreateScreenshot(
+        engine,
+        scene.activeCamera,
+        { precision: 1.0 },
+        data => {
+          image.value = data
+          model.append('image', dataURLtoFile(data, event.files[0].name))
+        },
+      )
     })
   }
 }
 
 function addDetailDoc() {
   if (!details.value.length || details.value.at(-1)?.detailId) {
-    details.value.push({ detailId: '', documentation: '' })
+    details.value.push({ detailId: '', documentation: '', modelId: 0 })
   }
 }
 
 function addNode() {
   if (!nodes.value.length || nodes.value.at(-1)?.title) {
-    nodes.value.push({ title: '', details: [] })
+    nodes.value.push({ title: '', details: [], modelId: 0, })
   }
+}
+
+async function handleCreate() {
+  model.append('html', documentation.value)
+  let id = await (await httpClient.post('/models', model)).data
+  console.log(id)
+  let requests = details.value.map(detail => {
+    detail.modelId = id
+    return httpClient.post('/documentation', detail)
+  })
+
+  let requestsCollection = nodes.value.map(node => {
+    node.modelId = id
+    return httpClient.post('/collection', node)
+  })
+  Promise.all([...requests, ...requestsCollection])
+}
+
+function dataURLtoFile(dataurl: string, filename: string) {
+  var arr = dataurl.split(','),
+    mime = arr[0].match(/:(.*?);/)![1],
+    bstr = atob(arr[arr.length - 1]),
+    n = bstr.length,
+    u8arr = new Uint8Array(n)
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n)
+  }
+  return new File([u8arr], filename, { type: mime })
 }
 </script>

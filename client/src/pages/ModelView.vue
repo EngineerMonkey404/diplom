@@ -1,46 +1,44 @@
 <template>
-  <TabView class="h-screen w-screen">
-    <TabPanel header="Модель">
-      <div>
+  <div class="h-screen w-screen flex flex-col relative">
+    <div class="flex w-[80%] justify-center py-[10px] gap-x-[40px]">
+      <RouterLink
+        class="absolute top-[10px] left-[10px]"
+        to="/"
+      >
+        back
+      </RouterLink>
+      <button
+        class="btn-style"
+        @click="currentWindow = 'Модель'"
+        :class="currentWindow === 'Модель' ? 'bg-gray-100' : ''"
+      >
+        Модель
+      </button>
+      <button
+        class="btn-style"
+        @click="currentWindow = 'Документация'"
+        :class="currentWindow === 'Документация' ? 'bg-gray-100' : ''"
+      >
+        Документация
+      </button>
+      <RouterLink
+        class="absolute top-[10px] right-[21%]"
+        to="/admin/login"
+      >
+        Войти
+      </RouterLink>
+    </div>
+    <div
+      v-show="currentWindow === 'Модель'"
+      class="flex w-[80%] h-full"
+    >
+      <div class="grow flex flex-col overflow-hidden">
         <canvas
           ref="canvas"
-          class="w-[90%] h-[94.8vh]"
+          class="grow object-cover"
         ></canvas>
-        <Splitter
-          class="absolute right-0 top-0 bg-white w-[20%] h-full rounded-none"
-          layout="vertical"
-        >
-          <SplitterPanel
-            :size="currentDetail ? 75 : 100"
-          >
-            <!-- <div class="text-center py-[5px]">{{ route.params.id }}</div> -->
-            <MeshCollection
-              :meshes="
-                myScene?.meshes.filter(mesh => mesh.name !== '__root__') || []
-              "
-              :nodes="nodes"
-              @change-current-detail="meshName => (currentDetail = meshName)"
-            />
-          </SplitterPanel>
-          <SplitterPanel
-            v-if="currentDetail"
-            :size="25"
-            class="h-full overflow-auto p-[5px]"
-          >
-            <h3>Деталь {{ currentDetail }}</h3>
 
-            <p class="">
-              Здесь будет описание детали Здесь будет описание детали Здесь
-              будет описание детали Здесь будет описание детали Здесь будет
-              описание детали Здесь будет описание детали Здесь будет описание
-              деталиЗдесь будет описание детали Здесь будет описание детали
-            </p>
-          </SplitterPanel>
-        </Splitter>
-
-        <div
-          class="absolute bottom-0 left-0 w-[80%] bg-white p-[10px] flex gap-[20px]"
-        >
+        <div class="bg-white p-[10px] flex gap-[20px]">
           <button @click="clipY()">clipY</button>
           <button @click="clipX()">clipX</button>
           <button @click="clipZ()">clipZ</button>
@@ -48,20 +46,53 @@
           <button @click="resetElements()">reset choosen elements</button>
         </div>
       </div>
-    </TabPanel>
-    <TabPanel header="Документация">
-      <p class="m-0">
-        Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-        accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab
-        illo inventore veritatis et quasi architecto beatae vitae dicta sunt
-        explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut
-        odit aut fugit, sed quia consequuntur magni dolores eos qui ratione
-        voluptatem sequi nesciunt. Consectetur, adipisci velit, sed quia non
-        numquam eius modi.
-      </p>
-    </TabPanel>
+      <Splitter
+        class="absolute right-0 top-0 h-full bg-white w-[20%] rounded-none"
+        layout="vertical"
+      >
+        <SplitterPanel
+          :size="currentDetail ? 75 : 100"
+          class="p-[5px]"
+        >
+          <!-- <div class="text-center py-[5px]">{{ route.params.id }}</div> -->
+          <MeshCollection
+            :details="model?.detailsDocumentation || []"
+            :collections="model?.collection || []"
+            :meshes="
+              myScene?.meshes.filter(mesh => mesh.name !== '__root__') || []
+            "
+            @change-current-detail="detailId => changeDetail(detailId)"
+          />
+        </SplitterPanel>
+        <SplitterPanel
+          v-if="currentDetail"
+          :size="25"
+          class="h-full overflow-auto p-[5px]"
+        >
+          <h3>Деталь {{ currentDetail.detailId }}</h3>
+
+          <p class="">
+            {{ currentDetail.documentation }}
+          </p>
+        </SplitterPanel>
+      </Splitter>
+    </div>
+
+    <div
+      v-if="currentWindow === 'Документация'"
+      class="container mx-auto"
+    >
+      <p
+        class="m-0"
+        v-html="model?.html"
+      ></p>
+    </div>
+  </div>
+  <!-- <TabView>
+    <TabPanel header="Модель"></TabPanel>
+    <TabPanel header="Документация"></TabPanel>
   </TabView>
-  <!-- <div class="relative h-screen w-screen"></div> -->
+  <div class="relative h-screen w-screen"></div> -->
 </template>
 
 <script setup lang="ts">
@@ -69,19 +100,21 @@ import { ref } from 'vue'
 import { onMounted } from 'vue'
 import { createScene } from '../scenes/MainScene'
 import { Scene, HighlightLayer } from 'babylonjs'
-import { useRoute } from 'vue-router'
+import { RouterLink, useRoute } from 'vue-router'
 import Splitter from 'primevue/splitter'
 import SplitterPanel from 'primevue/splitterpanel'
-import TabView from 'primevue/tabview'
-import TabPanel from 'primevue/tabpanel'
 import MeshCollection from '../components/MeshCollection.vue'
+import { httpClient } from '../axiosInstance'
+import { Model, DetailDoc } from '../types'
 
 const canvas = ref()
 // const meshes = ref<AbstractMesh[]>([])
 const myScene = ref<Scene>()
 const myHl = ref<HighlightLayer>()
 const route = useRoute()
-const currentDetail = ref('')
+const currentDetail = ref<DetailDoc | null>(null)
+const model = ref<Model | null>(null)
+const currentWindow = ref('Модель')
 
 const nodes = [
   {
@@ -99,7 +132,11 @@ const nodes = [
 ]
 
 onMounted(async () => {
-  const { engine, scene, hl } = await createScene(canvas.value, route.params.id)
+  model.value = (await httpClient.get(`/models/${route.params.id}`)).data
+  const { engine, scene, hl } = await createScene(
+    canvas.value,
+    model.value?.fileName || '',
+  )
   myScene.value = scene
   myHl.value = hl
   //console.log(myScene.value)
@@ -165,6 +202,17 @@ function getVisibleMeshesCentroid() {
 function resetElements() {
   resetClip()
   myScene.value?.meshes.forEach(mesh => mesh.setEnabled(true))
+}
+
+function changeDetail(detailId: string) {
+  let index = model.value?.detailsDocumentation.findIndex(
+    detail => detail.detailId === detailId,
+  )
+  if (index !== -1) {
+    currentDetail.value = model.value?.detailsDocumentation[index!]!
+  } else {
+    currentDetail.value = null
+  }
 }
 </script>
 
