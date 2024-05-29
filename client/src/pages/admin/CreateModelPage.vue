@@ -4,13 +4,15 @@
     <h3 class="mb-[20px]">Раздел документации</h3>
     <DocsEditor v-model="documentation"/>
     {{ documentation }}
-    <FileUpload
+    <!-- <FileUpload
       mode="advanced"
       :showUploadButton="false"
       :showCancelButton="false"
       chooseLabel="Выберите файл"
       @select="onSelect"
-    />
+    /> -->
+    <input @change="onSelect($event)" id="file-input" type="file"/>
+    <label for="file-input">Выбор файла</label>
     <img
       v-if="image"
       class="w-[100px] h-[100px] object-cover"
@@ -75,7 +77,7 @@
 import { ref } from 'vue'
 import DocsEditor from '../../components/DocsEditor.vue'
 import FileUpload from 'primevue/fileupload'
-import { FileUploadSelectEvent } from 'primevue/fileupload'
+// import { FileUploadSelectEvent } from 'primevue/fileupload'
 import { createScene } from '../../scenes/AdminScene'
 import { Scene } from 'babylonjs'
 import Dropdown from 'primevue/dropdown'
@@ -99,15 +101,15 @@ const documentation = ref('')
 
 const model = new FormData()
 
-async function onSelect(event: FileUploadSelectEvent) {
-  console.log(event.files[0])
-  if (canvas.value && event.files[0]) {
-    const { engine, scene } = await createScene(canvas.value, event.files[0])
+async function onSelect(event: any) {
+  console.log(event.target.files[0])
+  if (canvas.value && event.target.files[0]) {
+    const { engine, scene } = await createScene(canvas.value, event.target.files[0])
     myScene.value = scene
     meshes.value = myScene.value.meshes
       .map(mesh => mesh.id)
       .filter(node => node !== '__root__')
-    model.append('file', event.files[0])
+    model.append('file', event.target.files[0])
     scene.onReadyObservable.add(() => {
       BABYLON.Tools.CreateScreenshot(
         engine,
@@ -115,10 +117,13 @@ async function onSelect(event: FileUploadSelectEvent) {
         { precision: 1.0 },
         data => {
           image.value = data
-          model.append('image', dataURLtoFile(data, event.files[0].name))
+          console.log(image.value)
+          model.append('image', dataURLtoFile(data, `${event.target.files[0].name}.png` ))
         },
       )
+
     })
+  
   }
 }
 
