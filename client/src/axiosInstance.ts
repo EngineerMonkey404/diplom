@@ -5,6 +5,6 @@ export const httpClient = axios.create({
   baseURL:
     process.env.NODE_ENV === "development"
       ? "http://localhost:3001/api/"
-      : "https://ibt-spb.ru/api/",
+      : "http://diplom.wex-web.ru/api",
   withCredentials: true,
 })
