@@ -29,7 +29,7 @@ async function bootstrap() {
   const host = cs.get('BACKEND_HOST');
   const port = cs.get('PORT');
   app.enableCors({
-    origin: ['http://localhost:3000'],
+    origin: ['*'],
     credentials: true,
   });
 
@@ -41,4 +41,3 @@ async function bootstrap() {
   app.listen(port);
 }
 bootstrap();
-
