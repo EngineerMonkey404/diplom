@@ -35,7 +35,7 @@
             <span>{{ model.fileName }}</span>
             <img
               class="w-full h-full object-cover rounded-[16px]"
-              :src="`http://diplom.wex-web.ru/public/${model.previewImageName}`"
+              :src="`http://diplom.wex-web.ru/api/public/${model.previewImageName}`"
               alt=""
             />
           </RouterLink>

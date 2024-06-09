@@ -28,7 +28,7 @@ const createScene = async (canvas: HTMLCanvasElement, fileName:string) => {
     // let file = (await httpClient.get(`models/file/${id}`)).data
     // console.log('file', file)
     // file = btoa(file)
-    const model = await BABYLON.SceneLoader.ImportMeshAsync("", "http://diplom.wex-web.ru/public/", fileName, scene)
+    const model = await BABYLON.SceneLoader.ImportMeshAsync("", "http://diplom.wex-web.ru/api/public/", fileName, scene)
     scene.createDefaultCameraOrLight(true, true, true);
     scene.activeCamera.alpha += Math.PI/3;
 
